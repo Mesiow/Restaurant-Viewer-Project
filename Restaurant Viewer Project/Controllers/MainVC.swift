@@ -14,12 +14,17 @@ class MainVC: UIViewController {
     let prevButton = UIButton()
     let nextButton = UIButton()
     let cardStack = SwipeCardStack()
-    let images = [
+    /*let images = [
         UIImage(named: "dune"),
         UIImage(named: "dune"),
         UIImage(named: "dune"),
         UIImage(named: "dune")
-    ]
+    ]*/
+    
+    let locationManager = CLLocationManager()
+    var currentLocation: CLLocation?
+    var businesses: [Business] = []
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -27,6 +32,29 @@ class MainVC: UIViewController {
         view.backgroundColor = .white
         configureCardStack()
         configureButtons()
+        configureLocationManager()
+    }
+    
+    //Restaurant data fetch
+    func fetchRestaurantDataAtLocation(latitude: Double, longitude: Double){
+        NetworkManager.shared.fetchRestaurantsAtLocation(lat: latitude, long: longitude) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+                case .success(let response):
+                    self.businesses = response.businesses
+                    DispatchQueue.main.async {
+                        self.cardStack.reloadData()
+                    }
+                 
+                case .failure(let error):
+                    //DispatchQueue.main.async { self.removeActivityLoadingView() }
+                    self.presentAlertOnMainThread(title: "Something went wrong", message: error.rawValue)
+            }
+        }
+    }
+    
+    private func configureLocationManager(){
+        locationManager.delegate = self
     }
     
     func configureCardStack(){
@@ -76,33 +104,46 @@ class MainVC: UIViewController {
         cardStack.swipe(.left, animated: true)
     }
     
-    func card(fromImage image: UIImage) -> SwipeCard {
-        let card = SwipeCard()
-        card.swipeDirections = [.left, .right]
-        card.content = UIImageView(image: image)
-        
-        let footer = RestaurantInfoView()
-        footer.set(name: "Dune", rating: 5, imageUrl: "")
-        card.footer = footer
-        
-        let leftOverlay = UIView()
-        leftOverlay.backgroundColor = .none
-        
-        let rightOverlay = UIView()
-        rightOverlay.backgroundColor = .none
-        
-        card.setOverlays([.left: leftOverlay, .right: rightOverlay])
-        
-        return card
+    func card(index: Int) -> SwipeCard {
+        if self.businesses.count > 0 {
+            let card = SwipeCard()
+            card.swipeDirections = [.left, .right]
+            
+            let business = self.businesses[index]
+            //Download image onto card
+            let url = self.businesses[index].image_url
+            if let url = URL(string: url){
+                NetworkManager.shared.downloadImage(from: url) { image in
+                    DispatchQueue.main.async {
+                        card.content = UIImageView(image: image)
+                    }
+                }
+            }
+            
+            let footer = RestaurantInfoView()
+            footer.set(name: business.name, rating: business.rating)
+            card.footer = footer
+            
+            let leftOverlay = UIView()
+            leftOverlay.backgroundColor = .none
+            
+            let rightOverlay = UIView()
+            rightOverlay.backgroundColor = .none
+            
+            card.setOverlays([.left: leftOverlay, .right: rightOverlay])
+
+            return card
+        }
+        return SwipeCard()
     }
 }
 
 extension MainVC: SwipeCardStackDataSource, SwipeCardStackDelegate {
     func cardStack(_ cardStack: Shuffle.SwipeCardStack, cardForIndexAt index: Int) -> Shuffle.SwipeCard {
-        return card(fromImage: images[index]!)
+        return card(index: index)
     }
     
     func numberOfCards(in cardStack: Shuffle.SwipeCardStack) -> Int {
-        return images.count
+        return businesses.count
     }
 }
