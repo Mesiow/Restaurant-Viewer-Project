@@ -97,7 +97,7 @@ class MainVC: UIViewController {
     }
 }
 
-extension ViewController: SwipeCardStackDataSource, SwipeCardStackDelegate {
+extension MainVC: SwipeCardStackDataSource, SwipeCardStackDelegate {
     func cardStack(_ cardStack: Shuffle.SwipeCardStack, cardForIndexAt index: Int) -> Shuffle.SwipeCard {
         return card(fromImage: images[index]!)
     }
