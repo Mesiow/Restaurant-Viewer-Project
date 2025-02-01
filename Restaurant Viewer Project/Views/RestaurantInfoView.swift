@@ -9,7 +9,6 @@ import UIKit
 
 class RestaurantInfoView: UIView {
     private let nameLabel = UILabel()
-    private let imageView = UIImageView()
     private let ratingLabel = UILabel()
     
     init(){
