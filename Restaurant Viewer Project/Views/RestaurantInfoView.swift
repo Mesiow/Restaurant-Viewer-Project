@@ -38,11 +38,6 @@ class RestaurantInfoView: UIView {
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(nameLabel)
         
-        // Add and position the image view
-        imageView.contentMode = .scaleAspectFill
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(imageView)
-        
         // Add and position the rating label
         ratingLabel.font = UIFont.systemFont(ofSize: 18)
         ratingLabel.textColor = .darkGray
@@ -51,17 +46,12 @@ class RestaurantInfoView: UIView {
         
         // Constraints to arrange the elements
         NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: self.topAnchor, constant: 10),
-            imageView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
-            imageView.widthAnchor.constraint(equalToConstant: 60),
-            imageView.heightAnchor.constraint(equalToConstant: 60),
-            
             nameLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 10),
-            nameLabel.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 10),
+            nameLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 10),
             nameLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -10),
             
             ratingLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 5),
-            ratingLabel.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 10),
+            ratingLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor, constant: 10),
             ratingLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10)
         ])
     }
