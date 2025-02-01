@@ -14,16 +14,11 @@ class MainVC: UIViewController {
     let prevButton = UIButton()
     let nextButton = UIButton()
     let cardStack = SwipeCardStack()
-    /*let images = [
-        UIImage(named: "dune"),
-        UIImage(named: "dune"),
-        UIImage(named: "dune"),
-        UIImage(named: "dune")
-    ]*/
     
     let locationManager = CLLocationManager()
     var currentLocation: CLLocation?
     var businesses: [Business] = []
+    var pageOffset = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,13 +40,19 @@ class MainVC: UIViewController {
         }
     }
     
+    func startFetchingMoreRestuarantData(){
+        self.showActivityLoadingView()
+        pageOffset += 1
+        locationManager.startUpdatingLocation()
+    }
+    
     //Restaurant data fetch
     func fetchRestaurantDataAtLocation(latitude: Double, longitude: Double){
-        NetworkManager.shared.fetchRestaurantsAtLocation(lat: latitude, long: longitude) { [weak self] result in
+        NetworkManager.shared.fetchRestaurantsAtLocation(lat: latitude, long: longitude, offset: pageOffset) { [weak self] result in
             guard let self = self else { return }
             switch result {
                 case .success(let response):
-                    self.businesses = response.businesses
+                    self.businesses = response.businesses //add new results to end of array
                     showFetchedRestaurants()
                 
                 case .failure(let error):
@@ -74,6 +75,7 @@ class MainVC: UIViewController {
         cardStack.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20).isActive = true
         cardStack.heightAnchor.constraint(equalToConstant: 600).isActive = true
         cardStack.dataSource = self
+        cardStack.delegate = self
     }
     
     private func configureButtons(){
@@ -105,7 +107,7 @@ class MainVC: UIViewController {
     }
     
     @objc func previousButtonPressed() {
-        cardStack.undoLastSwipe(animated: true)
+        self.cardStack.undoLastSwipe(animated: true)
     }
     
     @objc func nextButtonPressed(){
@@ -147,6 +149,10 @@ class MainVC: UIViewController {
 }
 
 extension MainVC: SwipeCardStackDataSource, SwipeCardStackDelegate {
+    func didSwipeAllCards(_ cardStack: SwipeCardStack) {
+        self.startFetchingMoreRestuarantData()
+    }
+    
     func cardStack(_ cardStack: Shuffle.SwipeCardStack, cardForIndexAt index: Int) -> Shuffle.SwipeCard {
         return card(index: index)
     }
