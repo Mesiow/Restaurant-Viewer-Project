@@ -33,6 +33,16 @@ class MainVC: UIViewController {
         configureCardStack()
         configureButtons()
         configureLocationManager()
+        
+        self.showActivityLoadingView()
+    }
+    
+    func showFetchedRestaurants(){
+        DispatchQueue.main.async {
+            //Remove activity view and reload card stack to show our fetched data
+            self.removeActivityLoadingView()
+            self.cardStack.reloadData()
+        }
     }
     
     //Restaurant data fetch
@@ -42,12 +52,10 @@ class MainVC: UIViewController {
             switch result {
                 case .success(let response):
                     self.businesses = response.businesses
-                    DispatchQueue.main.async {
-                        self.cardStack.reloadData()
-                    }
-                 
+                    showFetchedRestaurants()
+                
                 case .failure(let error):
-                    //DispatchQueue.main.async { self.removeActivityLoadingView() }
+                    DispatchQueue.main.async { self.removeActivityLoadingView() }
                     self.presentAlertOnMainThread(title: "Something went wrong", message: error.rawValue)
             }
         }
