@@ -14,10 +14,10 @@ class NetworkManager{
     let apiEndpoint = "https://api.yelp.com/v3/businesses/search"
     let apiKey = "itoMaM6DJBtqD54BHSZQY9WdWR5xI_CnpZdxa3SG5i7N0M37VK1HklDDF4ifYh8SI-P2kI_mRj5KRSF4_FhTUAkEw322L8L8RY6bF1UB8jFx3TOR0-wW6Tk0KftNXXYx"
     
-    func fetchRestaurantsAtLocation(lat: Double, long: Double,
+    func fetchRestaurantsAtLocation(lat: Double, long: Double, offset: Int,
                                     completed: @escaping (Result<YelpResponse, NetworkError>) -> Void) {
         //Make sure the url was successfully created before continuing
-        let endpoint = "\(apiEndpoint)?term=restaurants&latitude=\(lat)&longitude=\(long)&limit=5"
+        let endpoint = "\(apiEndpoint)?term=restaurants&latitude=\(lat)&longitude=\(long)&limit=10&offset=\(offset)"
         guard let endpointURL = URL(string: endpoint) else {
             completed(.failure(.unableToComplete))
             return
