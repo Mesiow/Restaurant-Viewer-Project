@@ -17,7 +17,7 @@ class NetworkManager{
     func fetchRestaurantsAtLocation(lat: Double, long: Double,
                                     completed: @escaping (Result<YelpResponse, NetworkError>) -> Void) {
         //Make sure the url was successfully created before continuing
-        let endpoint = "\(apiEndpoint)?term=restaurants&latitude=\(lat)&longitude=\(long)&limit=3"
+        let endpoint = "\(apiEndpoint)?term=restaurants&latitude=\(lat)&longitude=\(long)&limit=5"
         guard let endpointURL = URL(string: endpoint) else {
             completed(.failure(.unableToComplete))
             return
