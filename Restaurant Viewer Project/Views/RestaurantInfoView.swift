@@ -67,7 +67,7 @@ class RestaurantInfoView: UIView {
         ])
     }
     
-    func set(name: String, rating: Double, imageUrl: String) {
+    func set(name: String, rating: Double) {
         nameLabel.text = name
         ratingLabel.text = "\(rating) stars"
     }
